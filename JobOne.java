@@ -8,9 +8,11 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.WritableComparable;
+import org.apache.hadoop.io.WritableComparator;
 import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.mapreduce.JobClient;
-import org.apache.hadoop.mapreduce.JobConf;
+import org.apache.hadoop.mapred.JobConf;
+import org.apache.hadoop.mapred.JobClient;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
@@ -22,7 +24,8 @@ public class JobOne {
 
 	public static class FilterMapper extends Mapper<Object, Text, Text, IntWritable> {
 
-		private final static IntWritable occurrencies = new IntWritable();
+		private static IntWritable occurrencies = new IntWritable();
+		private static Text recordCrime = new Text();
 
 		public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
 			String[] record = value.toString().split(",");
@@ -40,9 +43,10 @@ public class JobOne {
 				return;
 			}
 
-			occurrencies.set(record[3]);
+			occurrencies.set(Integer.parseInt(record[3]));
 
-			context.write(record[1], occurrencies);
+			recordCrime.set(record[1]);
+			context.write(recordCrime, occurrencies);
 		}
 	}
 
@@ -60,12 +64,12 @@ public class JobOne {
 	}
 
 	public static class InverterMapper extends Mapper<Text, Text, IntWritable, Text> {
-		IntWritable value = new IntWritable();
+		IntWritable valueint = new IntWritable();
 
 		public void map(Text key, Text value, Context context) throws IOException, InterruptedException {
-			value.set(Int.parseInt(value));
+			valueint.set(Int.parseInt(value));
 
-			context.write(value, key);
+			context.write(valueint, key);
 		}
 	}
 
