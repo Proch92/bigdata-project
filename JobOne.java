@@ -11,8 +11,6 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.WritableComparable;
 import org.apache.hadoop.io.WritableComparator;
 import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.mapred.JobConf;
-import org.apache.hadoop.mapred.JobClient;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
@@ -67,7 +65,7 @@ public class JobOne {
 		IntWritable valueint = new IntWritable();
 
 		public void map(Text key, Text value, Context context) throws IOException, InterruptedException {
-			valueint.set(Integer.parseInt(value));
+			valueint.set(Integer.parseInt(value.toString()));
 
 			context.write(valueint, key);
 		}
@@ -92,8 +90,8 @@ public class JobOne {
 		Configuration conf = new Configuration();
 		conf.set("crime", args[2]);
 
-		JobConf job1 = new JobConf(conf, JobOne.class);
-		job1.setJobName("first pass");
+		Job job1 = new Job(conf, "first pass");
+		job1.setJarByClass(JobOne.class);
 		job1.setMapperClass(FilterMapper.class);
 		job1.setCombinerClass(IntSumReducer.class);
 		job1.setReducerClass(IntSumReducer.class);
@@ -103,11 +101,11 @@ public class JobOne {
 		FileInputFormat.addInputPath(job1, new Path(args[0]));
 		FileOutputFormat.setOutputPath(job1, new Path("temp"));
 
-		JobClient.runJob(job1);
+		job1.waitForCompletion(true);
 
 
-		JobConf job2 = new JobConf(new Configuration(), JobOne.class);
-		job1.setJobName("second pass");
+		Job job2 = new Job(new Configuration(), "second pass");
+		job2.setJarByClass(JobOne.class);
 		job2.setMapperClass(InverterMapper.class);
 		job2.setSortComparatorClass(DescendingIntComparator.class);
 		job2.setReducerClass(Reducer.class);
@@ -118,6 +116,6 @@ public class JobOne {
 		FileInputFormat.addInputPath(job2, new Path("temp"));
 		FileOutputFormat.setOutputPath(job2, new Path(args[1]));
 
-		JobClient.runJob(job2);
+		System.exit(job2.waitForCompletion(true) ? 0 : 1);
 	}
 }
