@@ -67,7 +67,7 @@ public class JobOne {
 		IntWritable valueint = new IntWritable();
 
 		public void map(Text key, Text value, Context context) throws IOException, InterruptedException {
-			valueint.set(Int.parseInt(value));
+			valueint.set(Integer.parseInt(value));
 
 			context.write(valueint, key);
 		}
