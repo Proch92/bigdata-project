@@ -90,7 +90,7 @@ public class JobOne {
 		Configuration conf = new Configuration();
 		conf.set("crime", args[2]);
 
-		Job job1 = new Job(conf, "first pass");
+		Job job1 = Job.getInstance(conf, "first pass");
 		job1.setJarByClass(JobOne.class);
 		job1.setMapperClass(FilterMapper.class);
 		job1.setCombinerClass(IntSumReducer.class);
@@ -104,7 +104,7 @@ public class JobOne {
 		job1.waitForCompletion(true);
 
 
-		Job job2 = new Job(new Configuration(), "second pass");
+		Job job2 = Job.getInstance(new Configuration(), "second pass");
 		job2.setJarByClass(JobOne.class);
 		job2.setMapperClass(InverterMapper.class);
 		job2.setSortComparatorClass(DescendingIntComparator.class);
