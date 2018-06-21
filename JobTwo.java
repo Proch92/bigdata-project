@@ -1,6 +1,9 @@
 import java.io.IOException;
 import java.util.StringTokenizer;
 import java.util.Calendar;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Collections;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -20,7 +23,7 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 // m: q, anno - occ
 // r: q, anno - avg
 // m: anno - q, avg
-// r: anno - q1, q2, q3, avg1, avg2, avg3
+// r: anno - (q1, avg1), (q2, avg2), (q3, avg3)
 public class JobTwo {
 
 	public static class FilterMapper extends Mapper<Object, Text, Text, IntWritable> {
@@ -36,11 +39,11 @@ public class JobTwo {
 			String comp = record[1] + "_" + record[4];
 			compositeKey.set(comp);
 
-			context.write(recordCrime, occurrencies);
+			context.write(compositeKey, occurrencies);
 		}
 	}
 
-	public static class IntSumReducer extends Reducer<Text,IntWritable,Text,IntWritable> {
+	public static class AvgReducer extends Reducer<Text, IntWritable, Text, IntWritable> {
 		private IntWritable result = new IntWritable();
 
 		public void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
@@ -48,45 +51,46 @@ public class JobTwo {
 			for (IntWritable val : values) {
 				sum += val.get();
 			}
-			result.set(sum);
+			int avg = sum / 365;
+
+			result.set(avg);
 			context.write(key, result);
 		}
 	}
 
-	public static class InverterMapper extends Mapper<Text, Text, IntWritable, Text> {
-		IntWritable valueint = new IntWritable();
+	public static class DecupleMapper extends Mapper<Text, Text, Text, MapWritable> {
+		MapWritable values = new MapWritable();
 
 		public void map(Text key, Text value, Context context) throws IOException, InterruptedException {
-			valueint.set(Integer.parseInt(value.toString()));
+			String[] tokens = key.split("_");
 
-			context.write(valueint, key);
+			values.put(new IntWritable(0), new Text(tokens[0]));
+			values.put(new IntWritable(1), Integer.parseInt(value));
+
+			context.write(new IntWritable(Integer.parseInt(tokens[1])), values);
 		}
 	}
 
-	public static class DescendingIntComparator extends WritableComparator {
+	public static class SortReducer extends Reducer<IntWritable, MapWritable, IntWritable, MapWritable[]> {
+		ArrayWritable results = new ArrayWritable(MapWritable.class);
 
-		public DescendingIntComparator() {
-			super(IntWritable.class, true);
-		}
+		public void reduce(IntWritable key, Iterable<MapWritable> values, Context context) throws IOException, InterruptedException {
+			MapWritable[] mapArray = StreamSupport.stream(values.spliterator(), false).
+												sorted((o1, o2) -> o2.get(new IntWritable(1)).comapareTo(o1.get(new IntWritable(1)))).
+												limit(3).
+												toArray(MapWritable[]::new);
 
-		@SuppressWarnings("rawtypes")
-		@Override
-		public int compare(WritableComparable w1, WritableComparable w2) {
-			IntWritable key1 = (IntWritable) w1;
-			IntWritable key2 = (IntWritable) w2;          
-			return -1 * key1.compareTo(key2);
+			results.set(mapArray)
+
+			context.write(key, result);
 		}
 	}
 
 	public static void main(String[] args) throws Exception {
-		Configuration conf = new Configuration();
-		conf.set("crime", args[2]);
-
-		Job job1 = Job.getInstance(conf, "first pass");
+		Job job1 = Job.getInstance(new Configuration(), "first pass");
 		job1.setJarByClass(JobTwo.class);
 		job1.setMapperClass(FilterMapper.class);
-		job1.setCombinerClass(IntSumReducer.class);
-		job1.setReducerClass(IntSumReducer.class);
+		job1.setReducerClass(AvgReducer.class);
 		job1.setOutputKeyClass(Text.class);
 		job1.setOutputValueClass(IntWritable.class);
 
@@ -98,12 +102,10 @@ public class JobTwo {
 
 		Job job2 = Job.getInstance(new Configuration(), "second pass");
 		job2.setJarByClass(JobTwo.class);
-		job2.setMapperClass(InverterMapper.class);
-		job2.setSortComparatorClass(DescendingIntComparator.class);
+		job2.setMapperClass(DecupleMapper.class);
 		job2.setReducerClass(Reducer.class);
-		job2.setNumReduceTasks(1);
 		job2.setOutputKeyClass(IntWritable.class);
-		job2.setOutputValueClass(Text.class);
+		job2.setOutputValueClass(MapWritable.class);
 
 		FileInputFormat.addInputPath(job2, new Path("temp"));
 		FileOutputFormat.setOutputPath(job2, new Path(args[1]));

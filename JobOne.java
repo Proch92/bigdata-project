@@ -16,6 +16,11 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 
 // lista ordinata dei quartieri di londra per occorrenze di un determinato crimine negli ultimi 5 anni
+// job1
+// m: q - occ
+// r: q - sum
+// m: sum - q
+// r: sum - q (ordered)
 public class JobOne {
 
 	public static class FilterMapper extends Mapper<Object, Text, Text, IntWritable> {
