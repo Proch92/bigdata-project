@@ -1,5 +1,3 @@
-package mapreduce.orderbycrimes;
-
 import java.io.IOException;
 import java.util.StringTokenizer;
 import java.util.Calendar;
