@@ -15,34 +15,28 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 
-// lista ordinata dei quartieri di londra per occorrenze di un determinato crimine negli ultimi 5 anni
-public class JobOne {
+// per ogni anno determinare i 3 quartieri con la media di crimini al giorno più alta
+// record
+// m: q, anno - occ
+// r: q, anno - avg
+// m: anno - q, avg
+// r: anno - q1, q2, q3, avg1, avg2, avg3
+public class JobTwo {
 
 	public static class FilterMapper extends Mapper<Object, Text, Text, IntWritable> {
 
 		private static IntWritable occurrencies = new IntWritable();
-		private static Text neighborhood = new Text();
+		private static Text compositeKey = new Text();
 
 		public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
 			String[] record = value.toString().split(",");
 
-			// filter records on year constraint
-			int year = Integer.parseInt(record[4]);
-			int currentYear = Calendar.getInstance().get(Calendar.YEAR);
-			if (currentYear - year > 5) {
-				return;
-			}
-
-			//filter records on crime constraint
-			String crime = context.getConfiguration().get("crime");
-			if (!record[2].equals(crime)) {
-				return;
-			}
-
 			occurrencies.set(Integer.parseInt(record[3]));
 
-			neighborhood.set(record[1]);
-			context.write(neighborhood, occurrencies);
+			String comp = record[1] + "_" + record[4];
+			compositeKey.set(comp);
+
+			context.write(recordCrime, occurrencies);
 		}
 	}
 
@@ -89,7 +83,7 @@ public class JobOne {
 		conf.set("crime", args[2]);
 
 		Job job1 = Job.getInstance(conf, "first pass");
-		job1.setJarByClass(JobOne.class);
+		job1.setJarByClass(JobTwo.class);
 		job1.setMapperClass(FilterMapper.class);
 		job1.setCombinerClass(IntSumReducer.class);
 		job1.setReducerClass(IntSumReducer.class);
@@ -103,7 +97,7 @@ public class JobOne {
 
 
 		Job job2 = Job.getInstance(new Configuration(), "second pass");
-		job2.setJarByClass(JobOne.class);
+		job2.setJarByClass(JobTwo.class);
 		job2.setMapperClass(InverterMapper.class);
 		job2.setSortComparatorClass(DescendingIntComparator.class);
 		job2.setReducerClass(Reducer.class);

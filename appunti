@@ -1,0 +1,13 @@
+// lista ordinata dei quartieri di londra per occorrenze di un determinato crimine negli ultimi 5 anni
+job1
+m: q - occ
+r: q - sum
+m: sum - q
+r: sum - q (ordered)
+
+// per ogni anno determinare i 3 quartieri con la media di crimini al giorno più alta
+job2
+m: q, anno - occ
+r: q, anno - avg
+m: anno - q, avg
+r: anno - q1, q2, q3, avg1, avg2, avg3s
