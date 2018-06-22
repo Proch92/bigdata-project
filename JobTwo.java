@@ -96,6 +96,8 @@ public class JobTwo {
 		job1.setJarByClass(JobTwo.class);
 		job1.setMapperClass(FilterMapper.class);
 		job1.setReducerClass(AvgReducer.class);
+		job1.setMapOutputKeyClass(Text.class);
+		job1.setMapOutputValueClass(IntWritable.class);
 		job1.setOutputKeyClass(Text.class);
 		job1.setOutputValueClass(IntWritable.class);
 
@@ -109,6 +111,8 @@ public class JobTwo {
 		job2.setJarByClass(JobTwo.class);
 		job2.setMapperClass(DecupleMapper.class);
 		job2.setReducerClass(SortReducer.class);
+		job2.setMapOutputKeyClass(Text.class);
+		job2.setMapOutputValueClass(MapWritable.class);
 		job2.setOutputKeyClass(Text.class);
 		job2.setOutputValueClass(ArrayWritable.class);
 
