@@ -34,9 +34,10 @@ public class JobOne {
 			int year = Integer.parseInt(record[5]);
 			int currentYear = Calendar.getInstance().get(Calendar.YEAR);
 
-			String crime = context.getConfiguration().get("crime");
+			Configuration conf = context.getConfiguration();
+			String crime = conf.get("crime");
 
-			if (currentYear - year <= 5 && record[2].equals(crime)) {
+			if (year - currentYear <= 5 && crime.equals(record[2])) {
 				occurrencies.set(Integer.parseInt(record[4]));
 			} else {
 				occurrencies.set(0);
