@@ -12,8 +12,6 @@ import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.ArrayWritable;
 import org.apache.hadoop.io.MapWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.WritableComparable;
 import org.apache.hadoop.io.WritableComparator;
 import org.apache.hadoop.mapreduce.Job;
@@ -63,14 +61,14 @@ public class JobTwo {
 		}
 	}
 
-	public static class DecupleMapper extends Mapper<Text, Text, Text, MapWritable> {
+	public static class DecupleMapper extends Mapper<Text, IntWritable, Text, MapWritable> {
 		MapWritable values = new MapWritable();
 
-		public void map(Text key, Text value, Context context) throws IOException, InterruptedException {
+		public void map(Text key, IntWritable value, Context context) throws IOException, InterruptedException {
 			String[] tokens = key.toString().split("_");
 
 			values.put(new IntWritable(0), new Text(tokens[0]));
-			values.put(new IntWritable(1), new IntWritable(Integer.parseInt(value.toString())));
+			values.put(new IntWritable(1), value);
 
 			context.write(new Text(tokens[1]), values);
 		}
