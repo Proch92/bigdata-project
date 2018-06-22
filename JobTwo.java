@@ -54,6 +54,7 @@ public class JobTwo {
 				sum += val.get();
 			}
 			float avg = sum / 365;
+			System.out.println(avg);
 
 			context.write(key, new FloatWritable(avg));
 		}
