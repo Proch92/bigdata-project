@@ -31,18 +31,16 @@ public class JobOne {
 		public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
 			String[] record = value.toString().split(",");
 
-			int year = Integer.parseInt(record[4]);
+			int year = Integer.parseInt(record[5]);
 			int currentYear = Calendar.getInstance().get(Calendar.YEAR);
 
 			String crime = context.getConfiguration().get("crime");
 
 			if (currentYear - year <= 5 && record[2].equals(crime)) {
-				occurrencies.set(Integer.parseInt(record[3]));
+				occurrencies.set(Integer.parseInt(record[4]));
 			} else {
 				occurrencies.set(0);
 			}
-
-			
 
 			neighborhood.set(record[1]);
 			context.write(neighborhood, occurrencies);
