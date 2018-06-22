@@ -117,6 +117,6 @@ public class JobOne {
 		FileInputFormat.addInputPath(job2, new Path("temp"));
 		FileOutputFormat.setOutputPath(job2, new Path(args[1]));
 
-		return job2.waitForCompletion(true) ? 0 : 1;
+		System.exit(job2.waitForCompletion(true) ? 0 : 1);
 	}
 }
