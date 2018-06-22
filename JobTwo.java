@@ -8,6 +8,10 @@ import java.util.Collections;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.ArrayWritable;
+import org.apache.hadoop.io.MapWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.WritableComparable;
 import org.apache.hadoop.io.WritableComparator;
@@ -58,14 +62,14 @@ public class JobTwo {
 		}
 	}
 
-	public static class DecupleMapper extends Mapper<Text, Text, Text, MapWritable> {
+	public static class DecupleMapper extends Mapper<IntWritable, Text, Text, MapWritable> {
 		MapWritable values = new MapWritable();
 
 		public void map(Text key, Text value, Context context) throws IOException, InterruptedException {
-			String[] tokens = key.split("_");
+			String[] tokens = key.toString().split("_");
 
 			values.put(new IntWritable(0), new Text(tokens[0]));
-			values.put(new IntWritable(1), Integer.parseInt(value));
+			values.put(new IntWritable(1), new IntWritable(Integer.parseInt(value.toString())));
 
 			context.write(new IntWritable(Integer.parseInt(tokens[1])), values);
 		}
@@ -80,7 +84,7 @@ public class JobTwo {
 												limit(3).
 												toArray(MapWritable[]::new);
 
-			results.set(mapArray)
+			results.set(mapArray);
 
 			context.write(key, result);
 		}
