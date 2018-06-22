@@ -62,7 +62,7 @@ public class JobTwo {
 		}
 	}
 
-	public static class DecupleMapper extends Mapper<IntWritable, Text, Text, MapWritable> {
+	public static class DecupleMapper extends Mapper<Text, Text, Text, MapWritable> {
 		MapWritable values = new MapWritable();
 
 		public void map(Text key, Text value, Context context) throws IOException, InterruptedException {
@@ -71,14 +71,14 @@ public class JobTwo {
 			values.put(new IntWritable(0), new Text(tokens[0]));
 			values.put(new IntWritable(1), new IntWritable(Integer.parseInt(value.toString())));
 
-			context.write(new IntWritable(Integer.parseInt(tokens[1])), values);
+			context.write(new Text(tokens[1]), values);
 		}
 	}
 
-	public static class SortReducer extends Reducer<IntWritable, MapWritable, IntWritable, MapWritable[]> {
+	public static class SortReducer extends Reducer<Text, MapWritable, Text, MapWritable[]> {
 		ArrayWritable results = new ArrayWritable(MapWritable.class);
 
-		public void reduce(IntWritable key, Iterable<MapWritable> values, Context context) throws IOException, InterruptedException {
+		public void reduce(Text key, Iterable<MapWritable> values, Context context) throws IOException, InterruptedException {
 			MapWritable[] mapArray = StreamSupport.stream(values.spliterator(), false).
 												sorted((o1, o2) -> o2.get(new IntWritable(1)).comapareTo(o1.get(new IntWritable(1)))).
 												limit(3).
@@ -108,7 +108,7 @@ public class JobTwo {
 		job2.setJarByClass(JobTwo.class);
 		job2.setMapperClass(DecupleMapper.class);
 		job2.setReducerClass(SortReducer.class);
-		job2.setOutputKeyClass(IntWritable.class);
+		job2.setOutputKeyClass(Text.class);
 		job2.setOutputValueClass(MapWritable[].class);
 
 		FileInputFormat.addInputPath(job2, new Path("temp"));
