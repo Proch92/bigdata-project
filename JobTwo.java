@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Collections;
 import java.util.stream.StreamSupport;
+import java.util.stream.Collectors;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -76,18 +77,15 @@ public class JobTwo {
 		}
 	}
 
-	public static class SortReducer extends Reducer<Text, MapWritable, Text, ArrayWritable> {
-		ArrayWritable results = new ArrayWritable(MapWritable.class);
-
+	public static class SortReducer extends Reducer<Text, MapWritable, Text, Text> {
 		public void reduce(Text key, Iterable<MapWritable> values, Context context) throws IOException, InterruptedException {
-			MapWritable[] mapArray = StreamSupport.stream(values.spliterator(), false).
+			String results = StreamSupport.stream(values.spliterator(), false).
 												sorted((o1, o2) -> ((IntWritable) o2.get(new IntWritable(1))).compareTo(((IntWritable) o1.get(new IntWritable(1))))).
 												limit(3).
-												toArray(MapWritable[]::new);
+												map((m) -> "(" + m.get(new IntWritable(0)).toString() + ", " + m.get(new IntWritable(1)).toString() + ")").
+												collect(Collectors.joining(" "));
 
-			results.set(mapArray);
-
-			context.write(key, results);
+			context.write(key, new Text(results));
 		}
 	}
 
@@ -114,7 +112,7 @@ public class JobTwo {
 		job2.setMapOutputKeyClass(Text.class);
 		job2.setMapOutputValueClass(MapWritable.class);
 		job2.setOutputKeyClass(Text.class);
-		job2.setOutputValueClass(ArrayWritable.class);
+		job2.setOutputValueClass(Text.class);
 
 		FileInputFormat.addInputPath(job2, new Path("temp"));
 		FileOutputFormat.setOutputPath(job2, new Path(args[1]));
