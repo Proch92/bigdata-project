@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.ArrayWritable;
+import org.apache.hadoop.io.FloatWritable;
 import org.apache.hadoop.io.MapWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.WritableComparable;
@@ -47,18 +47,15 @@ public class JobTwo {
 		}
 	}
 
-	public static class AvgReducer extends Reducer<Text, IntWritable, Text, IntWritable> {
-		private IntWritable result = new IntWritable();
-
+	public static class AvgReducer extends Reducer<Text, IntWritable, Text, FloatWritable> {
 		public void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
 			int sum = 0;
 			for (IntWritable val : values) {
 				sum += val.get();
 			}
-			int avg = sum / 365;
+			float avg = sum / 365;
 
-			result.set(avg);
-			context.write(key, result);
+			context.write(key, new FloatWritable(avg));
 		}
 	}
 
@@ -68,10 +65,10 @@ public class JobTwo {
 		public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
 			String[] tokens = value.toString().split("\t");
 			String[] keys = tokens[0].split("_");
-			int avg = Integer.parseInt(tokens[1]);
+			int avg = Float.parseFloat(tokens[1]);
 
 			values.put(new IntWritable(0), new Text(keys[0]));
-			values.put(new IntWritable(1), new IntWritable(avg));
+			values.put(new IntWritable(1), new FloatWritable(avg));
 
 			context.write(new Text(keys[1]), values);
 		}
@@ -80,7 +77,7 @@ public class JobTwo {
 	public static class SortReducer extends Reducer<Text, MapWritable, Text, Text> {
 		public void reduce(Text key, Iterable<MapWritable> values, Context context) throws IOException, InterruptedException {
 			String results = StreamSupport.stream(values.spliterator(), false).
-												sorted((o1, o2) -> ((IntWritable) o2.get(new IntWritable(1))).compareTo(((IntWritable) o1.get(new IntWritable(1))))).
+												sorted((o1, o2) -> ((FloatWritable) o2.get(new IntWritable(1))).compareTo(((FloatWritable) o1.get(new IntWritable(1))))).
 												limit(3).
 												map((m) -> "(" + m.get(new IntWritable(0)).toString() + ", " + m.get(new IntWritable(1)).toString() + ")").
 												collect(Collectors.joining(" "));
@@ -97,7 +94,7 @@ public class JobTwo {
 		job1.setMapOutputKeyClass(Text.class);
 		job1.setMapOutputValueClass(IntWritable.class);
 		job1.setOutputKeyClass(Text.class);
-		job1.setOutputValueClass(IntWritable.class);
+		job1.setOutputValueClass(FloatWritable.class);
 
 		FileInputFormat.addInputPath(job1, new Path(args[0]));
 		FileOutputFormat.setOutputPath(job1, new Path("temp"));
