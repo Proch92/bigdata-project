@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Collections;
+import java.util.StreamSupport;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -86,7 +87,7 @@ public class JobTwo {
 
 			results.set(mapArray);
 
-			context.write(key, result);
+			context.write(key, results);
 		}
 	}
 
