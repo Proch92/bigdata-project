@@ -1,5 +1,5 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.typer import StructType, StructField, IntegerType, StringType
+from pyspark.sql.types import StructType, StructField, IntegerType, StringType
 
 # lista ordinata dei quartieri di londra per occorrenze di un determinato crimine negli ultimi 5 anni
 
