@@ -61,16 +61,18 @@ public class JobTwo {
 		}
 	}
 
-	public static class DecupleMapper extends Mapper<Text, IntWritable, Text, MapWritable> {
+	public static class DecupleMapper extends Mapper<Object, Text, Text, MapWritable> {
 		MapWritable values = new MapWritable();
 
-		public void map(Text key, IntWritable value, Context context) throws IOException, InterruptedException {
-			String[] tokens = key.toString().split("_");
+		public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
+			String[] tokens = value.toString().split("\t");
+			String[] keys = tokens[0].split("_");
+			int avg = Integer.parseInt(tokens[1]);
 
-			values.put(new IntWritable(0), new Text(tokens[0]));
-			values.put(new IntWritable(1), value);
+			values.put(new IntWritable(0), new Text(keys[0]));
+			values.put(new IntWritable(1), avg);
 
-			context.write(new Text(tokens[1]), values);
+			context.write(new Text(keys[1]), values);
 		}
 	}
 
@@ -108,7 +110,7 @@ public class JobTwo {
 		job2.setMapperClass(DecupleMapper.class);
 		job2.setReducerClass(SortReducer.class);
 		job2.setOutputKeyClass(Text.class);
-		job2.setOutputValueClass(MapWritable[].class);
+		job2.setOutputValueClass(ArrayWritable.class);
 
 		FileInputFormat.addInputPath(job2, new Path("temp"));
 		FileOutputFormat.setOutputPath(job2, new Path(args[1]));

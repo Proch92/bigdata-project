@@ -64,13 +64,13 @@ public class JobOne {
 		}
 	}
 
-	public static class InverterMapper extends Mapper<Text, Text, IntWritable, Text> {
-		IntWritable valueint = new IntWritable();
+	public static class InverterMapper extends Mapper<Object, Text, IntWritable, Text> {
+		public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
+			String[] tokens = value.toString().split("\t");
+			String neighborhood = tokens[0];
+			int sum = Integer.parseInt(tokens[1]);
 
-		public void map(Text key, Text value, Context context) throws IOException, InterruptedException {
-			valueint.set(Integer.parseInt(value.toString()));
-
-			context.write(valueint, key);
+			context.write(new IntWritable(sum), new Text(neighborhood));
 		}
 	}
 
