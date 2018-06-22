@@ -18,4 +18,10 @@ if __name__ == '__main__':
 
 	df = spark.read.csv("data/london.csv", header=False, schema=schema).cache()
 
-	print df.columns
+	results = df.filter(df.year >= 2013) \
+				.filter(df.crime == "Robbery") \
+				.select(["neigh", "crime"]) \
+				.groupby("neigh") \
+				.agg("crime") \
+				.sort("crime", ascending=False) \
+				.show()
