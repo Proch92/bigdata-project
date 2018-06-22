@@ -79,7 +79,7 @@ public class JobTwo {
 			String results = StreamSupport.stream(values.spliterator(), false).
 												sorted((o1, o2) -> ((FloatWritable) o2.get(new IntWritable(1))).compareTo(((FloatWritable) o1.get(new IntWritable(1))))).
 												limit(3).
-												map((m) -> "(" + m.get(new IntWritable(0)).toString() + ", " + m.get(new IntWritable(1)).toString() + ")").
+												forEach((m) -> "(" + m.get(new IntWritable(0)).toString() + ", " + m.get(new IntWritable(1)).toString() + ")").
 												collect(Collectors.joining(" "));
 
 			context.write(key, new Text(results));
