@@ -39,9 +39,9 @@ public class JobTwo {
 		public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
 			String[] record = value.toString().split(",");
 
-			occurrencies.set(Integer.parseInt(record[3]));
+			occurrencies.set(Integer.parseInt(record[4]));
 
-			String comp = record[1] + "_" + record[4];
+			String comp = record[1] + "_" + record[5];
 			compositeKey.set(comp);
 
 			context.write(compositeKey, occurrencies);

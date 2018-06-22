@@ -89,6 +89,7 @@ public class JobOne {
 		}
 	}
 
+	//params: inputfile, outputfile, crime
 	public static void main(String[] args) throws Exception {
 		Configuration conf = new Configuration();
 		conf.set("crime", args[2]);
