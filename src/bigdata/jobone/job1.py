@@ -1,5 +1,5 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.typer import StructType, StructField, IntegerType, StringType
+from pyspark.sql.types import StructType, StructField, IntegerType, StringType
 
 # lista ordinata dei quartieri di londra per occorrenze di un determinato crimine negli ultimi 5 anni
 
@@ -18,4 +18,10 @@ if __name__ == '__main__':
 
 	df = spark.read.csv("data/london.csv", header=False, schema=schema).cache()
 
-	print df.columns
+	results = df.filter(df.year >= 2013) \
+				.filter(df.crime == "Robbery") \
+				.select(["neigh", "crime"]) \
+				.groupby("neigh") \
+				.agg("crime") \
+				.sort("crime", ascending=False) \
+				.show()
