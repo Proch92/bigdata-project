@@ -1,5 +1,6 @@
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType, StructField, IntegerType, StringType
+from pyspark.sql.functions import desc
 
 # lista ordinata dei quartieri di londra per occorrenze di un determinato crimine negli ultimi 5 anni
 
@@ -20,8 +21,8 @@ if __name__ == '__main__':
 
 	results = df.filter(df.year >= 2013) \
 				.filter(df.crime == "Robbery") \
-				.select(["neigh", "crime"]) \
+				.select(["neigh", "crime", "occ"]) \
 				.groupby("neigh") \
-				.agg("crime") \
-				.sort("crime", ascending=False) \
+				.sum("occ") \
+				.sort(desc("sum(occ)")) \
 				.show()
