@@ -70,7 +70,7 @@ public class JobTwo {
 			int avg = Integer.parseInt(tokens[1]);
 
 			values.put(new IntWritable(0), new Text(keys[0]));
-			values.put(new IntWritable(1), avg);
+			values.put(new IntWritable(1), new IntWritable(avg));
 
 			context.write(new Text(keys[1]), values);
 		}
