@@ -4,7 +4,7 @@ import java.util.Calendar;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Collections;
-import java.util.StreamSupport;
+import java.util.stream.StreamSupport;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -76,12 +76,12 @@ public class JobTwo {
 		}
 	}
 
-	public static class SortReducer extends Reducer<Text, MapWritable, Text, MapWritable[]> {
+	public static class SortReducer extends Reducer<Text, MapWritable, Text, ArrayWritable> {
 		ArrayWritable results = new ArrayWritable(MapWritable.class);
 
 		public void reduce(Text key, Iterable<MapWritable> values, Context context) throws IOException, InterruptedException {
 			MapWritable[] mapArray = StreamSupport.stream(values.spliterator(), false).
-												sorted((o1, o2) -> o2.get(new IntWritable(1)).comapareTo(o1.get(new IntWritable(1)))).
+												sorted((o1, o2) -> o2.get(new IntWritable(1)).compareTo(o1.get(new IntWritable(1)))).
 												limit(3).
 												toArray(MapWritable[]::new);
 
