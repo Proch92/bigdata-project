@@ -75,11 +75,15 @@ public class JobTwo {
 	}
 
 	public static class SortReducer extends Reducer<Text, MapWritable, Text, Text> {
+		private String mapToString (MapWritable m) {
+			return "(" + m.get(new IntWritable(0)).toString() + ", " + m.get(new IntWritable(1)).toString() + ")";
+		}
+
 		public void reduce(Text key, Iterable<MapWritable> values, Context context) throws IOException, InterruptedException {
 			String results = StreamSupport.stream(values.spliterator(), false).
 												sorted((o1, o2) -> ((FloatWritable) o2.get(new IntWritable(1))).compareTo(((FloatWritable) o1.get(new IntWritable(1))))).
 												limit(3).
-												forEach((m) -> "(" + m.get(new IntWritable(0)).toString() + ", " + m.get(new IntWritable(1)).toString() + ")").
+												forEach(m -> mapToString(m)).
 												collect(Collectors.joining(" "));
 
 			context.write(key, new Text(results));
