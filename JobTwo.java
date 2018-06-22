@@ -76,7 +76,7 @@ public class JobTwo {
 
 	public static class SortReducer extends Reducer<Text, MapWritable, Text, Text> {
 		private String mapToString (MapWritable m) {
-			return "(" + m.get(new IntWritable(0)).toString() + ", " + m.get(new IntWritable(1)).toString() + ")";
+			return new String("(" + m.get(new IntWritable(0)).toString() + ", " + m.get(new IntWritable(1)).toString() + ")");
 		}
 
 		public void reduce(Text key, Iterable<MapWritable> values, Context context) throws IOException, InterruptedException {
