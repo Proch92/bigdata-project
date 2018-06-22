@@ -49,12 +49,11 @@ public class JobTwo {
 
 	public static class AvgReducer extends Reducer<Text, IntWritable, Text, FloatWritable> {
 		public void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
-			int sum = 0;
+			float sum = 0;
 			for (IntWritable val : values) {
 				sum += val.get();
 			}
 			float avg = sum / 365;
-			System.out.println(avg);
 
 			context.write(key, new FloatWritable(avg));
 		}
