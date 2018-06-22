@@ -81,7 +81,7 @@ public class JobTwo {
 
 		public void reduce(Text key, Iterable<MapWritable> values, Context context) throws IOException, InterruptedException {
 			MapWritable[] mapArray = StreamSupport.stream(values.spliterator(), false).
-												sorted((o1, o2) -> o2.get(new IntWritable(1)).compareTo(o1.get(new IntWritable(1)))).
+												sorted((o1, o2) -> ((IntWritable) o2.get(new IntWritable(1))).comapareTo(((IntWritable) o1.get(new IntWritable(1))))).
 												limit(3).
 												toArray(MapWritable[]::new);
 
