@@ -65,7 +65,7 @@ public class JobTwo {
 		public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
 			String[] tokens = value.toString().split("\t");
 			String[] keys = tokens[0].split("_");
-			int avg = Float.parseFloat(tokens[1]);
+			float avg = Float.parseFloat(tokens[1]);
 
 			values.put(new IntWritable(0), new Text(keys[0]));
 			values.put(new IntWritable(1), new FloatWritable(avg));
