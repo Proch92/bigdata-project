@@ -107,9 +107,9 @@ public class JobTwo {
 		Job job2 = Job.getInstance(new Configuration(), "second pass");
 		job2.setJarByClass(JobTwo.class);
 		job2.setMapperClass(DecupleMapper.class);
-		job2.setReducerClass(Reducer.class);
+		job2.setReducerClass(SortReducer.class);
 		job2.setOutputKeyClass(IntWritable.class);
-		job2.setOutputValueClass(MapWritable.class);
+		job2.setOutputValueClass(MapWritable[].class);
 
 		FileInputFormat.addInputPath(job2, new Path("temp"));
 		FileOutputFormat.setOutputPath(job2, new Path(args[1]));
