@@ -8,6 +8,8 @@ import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.WritableComparable;
 import org.apache.hadoop.io.WritableComparator;
+import org.apache.hadoop.util.Tool;
+import org.apache.hadoop.util.ToolRunner;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
@@ -21,7 +23,7 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 // r: q - sum
 // m: sum - q
 // r: sum - q (ordered)
-public class JobOne {
+public class JobOne extends Configured implements Tool {
 
 	public static class FilterMapper extends Mapper<Object, Text, Text, IntWritable> {
 
@@ -86,9 +88,14 @@ public class JobOne {
 		}
 	}
 
-	//params: inputfile, outputfile, crime
 	public static void main(String[] args) throws Exception {
-		Configuration conf = new Configuration();
+		int res = ToolRunner.run(new Configuration(), new WordCount(), args);
+		System.exit(res);
+	}
+
+	//params: inputfile, outputfile, crime
+	public int run(String[] args) throws Exception {
+		Configuration conf = this.getConf();
 		conf.set("crime", args[2]);
 
 		Job job1 = Job.getInstance(conf, "first pass");
@@ -117,6 +124,6 @@ public class JobOne {
 		FileInputFormat.addInputPath(job2, new Path("temp"));
 		FileOutputFormat.setOutputPath(job2, new Path(args[1]));
 
-		System.exit(job2.waitForCompletion(true) ? 0 : 1);
+		return job2.waitForCompletion(true) ? 0 : 1;
 	}
 }
