@@ -1,5 +1,7 @@
 before_script:
-  - "git pull"
+  - "pwd"
+  - "cd"
+  - "pwd"
 
 job:
   script: "pwd"
