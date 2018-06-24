@@ -1,12 +1,10 @@
-before_script:
-  - "mkdir jar class"
-
 stages:
   - build
   - submitjob
 
 buildjava:
   stage: build
+  before_script: "mkdir jar class"
   script:
     - "javac -Xdiags:verbose -classpath $(hadoop classpath) -d class/ src/bigdata/jobone/JobOne.java"
     - "jar cf jar/jobone.jar class/bigdata/jobone/JobOne*.class"
