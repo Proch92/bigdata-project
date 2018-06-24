@@ -12,8 +12,8 @@ buildjava:
     - "jar cf jobtwo.jar JobTwo*.class"
   artifacts:
     paths:
-      - jobone.jar
-      - jobtwo.jar
+      - java/jobone.jar
+      - java/jobtwo.jar
 
 submit:
   stage: submitjob
