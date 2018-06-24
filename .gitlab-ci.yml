@@ -8,13 +8,13 @@ stages:
 buildjava:
   stage: build
   script:
-    - "/usr/bin/javac -Xdiags:verbose -classpath $(/usr/bin/hadoop classpath) -d class/ src/bigdata/jobone/JobOne.java"
-    - "/usr/bin/jar cf jar/jobone.jar class/bigdata/jobone/JobOne*.class"
-    - "/usr/bin/javac -Xdiags:verbose -classpath $(/usr/bin/hadoop classpath) -d class/ src/bigdata/jobtwo/JobTwo.java"
-    - "/usr/bin/jar cf jar/jobtwo.jar class/bigdata/jobtwo/JobTwo*.class"
+    - "javac -Xdiags:verbose -classpath $(hadoop classpath) -d class/ src/bigdata/jobone/JobOne.java"
+    - "jar cf jar/jobone.jar class/bigdata/jobone/JobOne*.class"
+    - "javac -Xdiags:verbose -classpath $(hadoop classpath) -d class/ src/bigdata/jobtwo/JobTwo.java"
+    - "jar cf jar/jobtwo.jar class/bigdata/jobtwo/JobTwo*.class"
 
 submit:
   stage: submitjob
   script:
-    - "/usr/bin/gcloud dataproc jobs submit hadoop --cluster cluster-05bd --jar jar/jobone.jar data dataout1 london.csv outfile"
-    - "/usr/bin/gcloud dataproc jobs submit hadoop --cluster cluster-05bd --jar jar/jobtwo.jar data dataout2 london.csv outfile"
+    - "gcloud dataproc jobs submit hadoop --cluster cluster-05bd --jar jar/jobone.jar data dataout1 london.csv outfile"
+    - "gcloud dataproc jobs submit hadoop --cluster cluster-05bd --jar jar/jobtwo.jar data dataout2 london.csv outfile"
