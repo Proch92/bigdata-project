@@ -12,6 +12,10 @@ buildjava:
     - "jar cf jar/jobone.jar class/bigdata/jobone/JobOne*.class"
     - "javac -Xdiags:verbose -classpath $(hadoop classpath) -d class/ src/bigdata/jobtwo/JobTwo.java"
     - "jar cf jar/jobtwo.jar class/bigdata/jobtwo/JobTwo*.class"
+  artifacts:
+    paths:
+      - jar/
+      - class/
 
 submit:
   stage: submitjob
