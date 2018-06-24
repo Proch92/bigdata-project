@@ -1,7 +1,5 @@
 before_script:
-  - "pwd"
-  - "cd dev/$CI_PROJECT_NAME"
-  - "git pull"
+  - "mkdir jar class"
 
 stages:
   - build
