@@ -7,9 +7,9 @@ buildjava:
   script:
     - "cd java"
     - "javac -Xdiags:verbose -classpath $(hadoop classpath) -d . JobOne.java"
-    - "jar cf jobone.jar class/bigdata/jobone/JobOne*.class"
+    - "jar cf jobone.jar JobOne*.class"
     - "javac -Xdiags:verbose -classpath $(hadoop classpath) -d . JobTwo.java"
-    - "jar cf jobtwo.jar class/bigdata/jobtwo/JobTwo*.class"
+    - "jar cf jobtwo.jar JobTwo*.class"
   artifacts:
     paths:
       - jobone.jar
