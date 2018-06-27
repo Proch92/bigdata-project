@@ -18,5 +18,5 @@ buildjava:
 submit:
   stage: submitjob
   script:
-    - "gcloud dataproc jobs submit hadoop --cluster cluster-05bd --jar java/jobone.jar -- JobOne data dataout1 london.csv outfile"
-    - "gcloud dataproc jobs submit hadoop --cluster cluster-05bd --jar java/jobtwo.jar -- JobTwo data dataout2 london.csv outfile"
+    - "gcloud dataproc jobs submit hadoop --cluster dataproc-cluster --jar java/jobone.jar -- JobOne data dataout1 london.csv outfile"
+    - "gcloud dataproc jobs submit hadoop --cluster dataproc-cluster --jar java/jobtwo.jar -- JobTwo data dataout2 london.csv outfile"
