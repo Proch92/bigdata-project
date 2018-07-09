@@ -19,6 +19,7 @@ buildjava:
 
 submit:
   stage: submitjob
+  allow_failure: true
   script:
 #    - "gcloud dataproc jobs submit hadoop --region europe-west1 --cluster dataproc-cluster --jar java/jobone.jar -- JobOne data dataout1 london.csv outfile"
 #    - "gcloud dataproc jobs submit hadoop --region europe-west1 --cluster dataproc-cluster --jar java/jobtwo.jar -- JobTwo data dataout2 london.csv outfile"
@@ -29,6 +30,7 @@ submit:
 
 retrieve:
   stage: get_output
+  allow_failure: true
   script:
     - "hdfs dfs -getmerge dataout1/ out1.txt"
     - "hdfs dfs -getmerge dataout2/ out2.txt"
@@ -37,6 +39,7 @@ retrieve:
 
 clean:
   stage: cleanup
+  allow_failure: true
   script:
     - "hdfs dfs -rm -r temp1"
     - "hdfs dfs -rm -r temp2"
