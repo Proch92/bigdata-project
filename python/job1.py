@@ -17,7 +17,7 @@ if __name__ == '__main__':
 			StructField("month", IntegerType())
 		])
 
-	df = spark.read.csv("data/london.csv", header=False, schema=schema).cache()
+	df = spark.read.csv("/user/proch92/data/london.csv", header=False, schema=schema).cache()
 
 	results = df.filter(df.year >= 2013) \
 				.filter(df.crime == "Robbery") \
