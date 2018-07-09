@@ -18,7 +18,9 @@ buildjava:
 submit:
   stage: submitjob
   script:
-    - "gcloud dataproc jobs submit hadoop --region europe-west1 --cluster dataproc-cluster --jar java/jobone.jar -- JobOne data dataout1 london.csv outfile"
-    - "gcloud dataproc jobs submit hadoop --region europe-west1 --cluster dataproc-cluster --jar java/jobtwo.jar -- JobTwo data dataout2 london.csv outfile"
+#    - "gcloud dataproc jobs submit hadoop --region europe-west1 --cluster dataproc-cluster --jar java/jobone.jar -- JobOne data dataout1 london.csv outfile"
+#    - "gcloud dataproc jobs submit hadoop --region europe-west1 --cluster dataproc-cluster --jar java/jobtwo.jar -- JobTwo data dataout2 london.csv outfile"
+    - "hadoop jar java/jobone.jar JobOne data dataout1 london.csv outfile"
+    - "hadoop jar java/jobtwo.jar JobTwo data dataout2 london.csv outfile"
     - "gcloud dataproc jobs submit pyspark --region europe-west1 --cluster dataproc-cluster python/job1.py"
     - "gcloud dataproc jobs submit pyspark --region europe-west1 --cluster dataproc-cluster python/job2.py"
