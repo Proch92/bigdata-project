@@ -20,6 +20,6 @@ if __name__ == '__main__':
 	temp1 = df.select(["year", "neigh", "occ"]) \
 				.groupby("year", "neigh") \
 				.sum("occ") \
-				#.withColumn("sum(occ)", col("sum(occ)") / 365) \
+#				.withColumn("sum(occ)", col("sum(occ)") / 365) \
 				.sort(desc("year"), desc("sum(occ)")) \
 				.show()
