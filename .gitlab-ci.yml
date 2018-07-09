@@ -1,6 +1,8 @@
 stages:
   - build
   - submitjob
+  - get_output
+  - cleanup
 
 buildjava:
   stage: build
@@ -21,8 +23,22 @@ submit:
 #    - "gcloud dataproc jobs submit hadoop --region europe-west1 --cluster dataproc-cluster --jar java/jobone.jar -- JobOne data dataout1 london.csv outfile"
 #    - "gcloud dataproc jobs submit hadoop --region europe-west1 --cluster dataproc-cluster --jar java/jobtwo.jar -- JobTwo data dataout2 london.csv outfile"
     - "hadoop jar java/jobone.jar JobOne data dataout1 london.csv outfile"
-    - "hdfs dfs -rm -r temp"
     - "hadoop jar java/jobtwo.jar JobTwo data dataout2 london.csv outfile"
-    - "hdfs dfs -rm -r temp"
     - "gcloud dataproc jobs submit pyspark --region europe-west1 --cluster dataproc-cluster python/job1.py"
     - "gcloud dataproc jobs submit pyspark --region europe-west1 --cluster dataproc-cluster python/job2.py"
+
+retrieve:
+  stage: get_output
+  script:
+    - "hdfs dfs -getmerge dataout1/ out1.txt"
+    - "hdfs dfs -getmerge dataout2/ out2.txt"
+    - "cat out1.txt"
+    - "cat out2.txt"
+
+clean:
+  stage: cleanup
+  script:
+    - "hdfs dfs -rm -r temp1"
+    - "hdfs dfs -rm -r temp2"
+    - "hdfs dfs -rm -r dataout1"
+    - "hdfs dfs -rm -r dataout2"

@@ -100,7 +100,7 @@ public class JobOne {
 		job1.setOutputValueClass(IntWritable.class);
 
 		FileInputFormat.addInputPath(job1, new Path(args[0]));
-		FileOutputFormat.setOutputPath(job1, new Path("temp"));
+		FileOutputFormat.setOutputPath(job1, new Path("temp1"));
 
 		job1.waitForCompletion(true);
 
@@ -114,7 +114,7 @@ public class JobOne {
 		job2.setOutputKeyClass(IntWritable.class);
 		job2.setOutputValueClass(Text.class);
 
-		FileInputFormat.addInputPath(job2, new Path("temp"));
+		FileInputFormat.addInputPath(job2, new Path("temp1"));
 		FileOutputFormat.setOutputPath(job2, new Path(args[1]));
 
 		System.exit(job2.waitForCompletion(true) ? 0 : 1);
