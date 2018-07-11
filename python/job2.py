@@ -29,4 +29,4 @@ if __name__ == '__main__':
 				.sort("year", "rank") \
 				.select(["year", "neigh", "sum(occ)"]) \
 				.withColumn("sum(occ)", col("sum(occ)") / 365) \
-				.saveAsTextFile("outpy1")
+				.write.text("outpy1")
