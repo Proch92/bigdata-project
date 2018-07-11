@@ -55,3 +55,5 @@ clean:
     - "hdfs dfs -rm -r temp2"
     - "hdfs dfs -rm -r dataout1"
     - "hdfs dfs -rm -r dataout2"
+    - "hdfs dfs -rm -r outpy1"
+    - "hdfs dfs -rm -r outpy2"

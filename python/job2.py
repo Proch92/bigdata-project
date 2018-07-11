@@ -5,7 +5,7 @@ from pyspark.sql.window import Window
 
 
 if __name__ == '__main__':
-	spark = SparkSession.builder.appName("py1").getOrCreate()
+	spark = SparkSession.builder.appName("py2").getOrCreate()
 
 	schema = StructType([
 			StructField("code", StringType()),
