@@ -56,6 +56,7 @@ public class JobOne {
 			for (IntWritable val : values) {
 				sum += val.get();
 			}
+			System.out.println(key + " " + sum);
 			result.set(sum);
 			context.write(key, result);
 		}
