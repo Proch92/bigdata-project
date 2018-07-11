@@ -25,4 +25,4 @@ if __name__ == '__main__':
 				.groupby("neigh") \
 				.sum("occ") \
 				.sort(desc("sum(occ)")) \
-				.write.text("outpy1")
+				.write.csv("outpy1")
