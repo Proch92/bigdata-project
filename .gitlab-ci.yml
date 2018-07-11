@@ -40,6 +40,12 @@ retrieve:
     - "cat out2.txt"
     - "cat outpy1.txt"
     - "cat outpy2.txt"
+  artifacts:
+    paths:
+      - out1.txt
+      - out2.txt
+      - outpy1.txt
+      - outpy2.txt
 
 clean:
   stage: cleanup
