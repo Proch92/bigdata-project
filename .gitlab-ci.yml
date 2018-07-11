@@ -34,8 +34,12 @@ retrieve:
   script:
     - "hdfs dfs -getmerge dataout1/ out1.txt"
     - "hdfs dfs -getmerge dataout2/ out2.txt"
+    - "hdfs dfs -getmerge outpy1/ outpy1.txt"
+    - "hdfs dfs -getmerge outpy2/ outpy2.txt"
     - "cat out1.txt"
     - "cat out2.txt"
+    - "cat outpy1.txt"
+    - "cat outpy2.txt"
 
 clean:
   stage: cleanup

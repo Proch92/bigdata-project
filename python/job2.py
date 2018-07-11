@@ -19,11 +19,14 @@ if __name__ == '__main__':
 
 	df = spark.read.csv("/user/proch92/data/london.csv", header=False, schema=schema).cache()
 
-	window = Window.partitionBy("year").orderBy("sum(occ)")
+	window = Window.partitionBy("year").orderBy(desc("sum(occ)"))
 
 	temp1 = df.select(["year", "neigh", "occ"]) \
 				.groupby("year", "neigh") \
 				.sum("occ") \
 				.withColumn("rank", rank().over(window)) \
 				.filter("rank <= 3") \
-				.show()
+				.sort("year", "rank") \
+				.select(["year", "neigh", "sum(occ)"]) \
+				.withColumn("sum(occ)", col("sum(occ)") / 365) \
+				.saveAsTextFile("outpy1")
