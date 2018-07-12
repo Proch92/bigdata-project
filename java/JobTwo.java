@@ -30,6 +30,7 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 // r: anno - (q1, avg1), (q2, avg2), (q3, avg3)
 public class JobTwo {
 
+	// crea una chiave composita quartiere+anno
 	public static class FilterMapper extends Mapper<Object, Text, Text, IntWritable> {
 
 		private static IntWritable occurrencies = new IntWritable();
@@ -47,6 +48,7 @@ public class JobTwo {
 		}
 	}
 
+	// riduzione sulla somma e divisione per 365 per calcolare la media annua
 	public static class AvgReducer extends Reducer<Text, IntWritable, Text, FloatWritable> {
 		public void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
 			float sum = 0;
@@ -59,6 +61,7 @@ public class JobTwo {
 		}
 	}
 
+	// decompone la chiave composita e crea una Map per passare quartiere e avg(occorrenze) al reducer
 	public static class DecupleMapper extends Mapper<Object, Text, Text, MapWritable> {
 		MapWritable values = new MapWritable();
 
@@ -74,6 +77,7 @@ public class JobTwo {
 		}
 	}
 
+	// usa l'iterable delle map per aprire uno stream e calcolare i primi 3 quartieri per ogni anno
 	public static class SortReducer extends Reducer<Text, MapWritable, Text, Text> {
 		private String mapToString (MapWritable m) {
 			return new String("(" + m.get(new IntWritable(0)).toString() + ", " + m.get(new IntWritable(1)).toString() + ")");

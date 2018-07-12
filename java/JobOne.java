@@ -23,6 +23,7 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 // r: sum - q (ordered)
 public class JobOne {
 
+	// fa il primo filtraggio sui record in base all'anno e al crimine commesso
 	public static class FilterMapper extends Mapper<Object, Text, Text, IntWritable> {
 
 		private static IntWritable occurrencies = new IntWritable();
@@ -48,6 +49,7 @@ public class JobOne {
 		}
 	}
 
+	// aggregazione sulla somma
 	public static class IntSumReducer extends Reducer<Text,IntWritable,Text,IntWritable> {
 		private IntWritable result = new IntWritable();
 
@@ -61,6 +63,7 @@ public class JobOne {
 		}
 	}
 
+	// scambia chiave e valore per poter ordinare sulla chiave con il reducer
 	public static class InverterMapper extends Mapper<Object, Text, IntWritable, Text> {
 		public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
 			String[] tokens = value.toString().split("\t");
@@ -71,6 +74,7 @@ public class JobOne {
 		}
 	}
 
+	// comparatore custom per ordinare in modo decrescente
 	public static class DescendingIntComparator extends WritableComparator {
 
 		public DescendingIntComparator() {
@@ -94,7 +98,7 @@ public class JobOne {
 		Job job1 = Job.getInstance(conf, "first pass");
 		job1.setJarByClass(JobOne.class);
 		job1.setMapperClass(FilterMapper.class);
-		job1.setCombinerClass(IntSumReducer.class);
+		job1.setCombinerClass(IntSumReducer.class);		// posso usare il mio reducer come combiner per ottimizzare l'I/O
 		job1.setReducerClass(IntSumReducer.class);
 		job1.setOutputKeyClass(Text.class);
 		job1.setOutputValueClass(IntWritable.class);
@@ -109,8 +113,8 @@ public class JobOne {
 		job2.setJarByClass(JobOne.class);
 		job2.setMapperClass(InverterMapper.class);
 		job2.setSortComparatorClass(DescendingIntComparator.class);
-		job2.setReducerClass(Reducer.class);
-		job2.setNumReduceTasks(1);
+		job2.setReducerClass(Reducer.class);							// uso la classe base Reducer e forzo
+		job2.setNumReduceTasks(1);										// 1 task per ottenere un ordinamento sulla chiave
 		job2.setOutputKeyClass(IntWritable.class);
 		job2.setOutputValueClass(Text.class);
 
