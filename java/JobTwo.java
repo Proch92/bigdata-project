@@ -80,13 +80,6 @@ public class JobTwo {
 			return new String("(" + m[0] + ", " + m[1] + ")");
 		}
 
-		private int comparator(String[] s1, String[] s2) {
-			float avg1 = Float.parseFloat(s1[1]);
-			float avg2 = Float.parseFloat(s2[1]);
-
-			return (int) (avg2 - avg1);
-		}
-
 		public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
 			String results = StreamSupport.stream(values.spliterator(), false).
 												map(m -> m.toString().split("_")).
