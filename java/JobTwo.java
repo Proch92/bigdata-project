@@ -63,29 +63,34 @@ public class JobTwo {
 
 	// decompone la chiave composita e crea una Map per passare quartiere e avg(occorrenze) al reducer
 	public static class DecupleMapper extends Mapper<Object, Text, Text, MapWritable> {
-		MapWritable values = new MapWritable();
 
 		public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
 			String[] tokens = value.toString().split("\t");
 			String[] keys = tokens[0].split("_");
-			float avg = Float.parseFloat(tokens[1]);
 
-			values.put(new IntWritable(0), new Text(keys[0]));
-			values.put(new IntWritable(1), new FloatWritable(avg));
+			String ser = keys[0] + "_" + Tokens[1];
 
-			context.write(new Text(keys[1]), values);
+			context.write(new Text(keys[1]), new Text(ser));
 		}
 	}
 
 	// usa l'iterable delle map per aprire uno stream e calcolare i primi 3 quartieri per ogni anno
 	public static class SortReducer extends Reducer<Text, MapWritable, Text, Text> {
 		private String mapToString (MapWritable m) {
-			return new String("(" + m.get(new IntWritable(0)).toString() + ", " + m.get(new IntWritable(1)).toString() + ")");
+			return new String("(" + m[0] + ", " + m[1] + ")");
+		}
+
+		private int comparator(String[] s1, String[] s2) {
+			float avg1 = Float.parseFloat(s1[1]);
+			float avg2 = Float.parseFloat(s2[1]);
+
+			return avg2 - avg1;
 		}
 
 		public void reduce(Text key, Iterable<MapWritable> values, Context context) throws IOException, InterruptedException {
 			String results = StreamSupport.stream(values.spliterator(), false).
-												sorted((o1, o2) -> ((FloatWritable) o2.get(new IntWritable(1))).compareTo(((FloatWritable) o1.get(new IntWritable(1))))).
+												map(m -> m.split("_")).
+												sorted(SortReducer::comparator).
 												limit(3).
 												map(m -> mapToString(m)).
 												collect(Collectors.joining(" "));
