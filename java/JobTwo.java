@@ -90,7 +90,7 @@ public class JobTwo {
 		public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
 			String results = StreamSupport.stream(values.spliterator(), false).
 												map(m -> m.toString().split("_")).
-												sorted(SortReducer::comparator).
+												sorted((o1, o2) -> Float(o2[1]).compareTo(Float(o1[1]))).
 												limit(3).
 												map(m -> mapToString(m)).
 												collect(Collectors.joining(" "));
