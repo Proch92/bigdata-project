@@ -62,21 +62,21 @@ public class JobTwo {
 	}
 
 	// decompone la chiave composita e crea una Map per passare quartiere e avg(occorrenze) al reducer
-	public static class DecupleMapper extends Mapper<Object, Text, Text, MapWritable> {
+	public static class DecupleMapper extends Mapper<Object, Text, Text, Text> {
 
 		public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
 			String[] tokens = value.toString().split("\t");
 			String[] keys = tokens[0].split("_");
 
-			String ser = keys[0] + "_" + Tokens[1];
+			String ser = keys[0] + "_" + tokens[1];
 
 			context.write(new Text(keys[1]), new Text(ser));
 		}
 	}
 
 	// usa l'iterable delle map per aprire uno stream e calcolare i primi 3 quartieri per ogni anno
-	public static class SortReducer extends Reducer<Text, MapWritable, Text, Text> {
-		private String mapToString (MapWritable m) {
+	public static class SortReducer extends Reducer<Text, Text, Text, Text> {
+		private String mapToString (String[] m) {
 			return new String("(" + m[0] + ", " + m[1] + ")");
 		}
 
@@ -84,12 +84,12 @@ public class JobTwo {
 			float avg1 = Float.parseFloat(s1[1]);
 			float avg2 = Float.parseFloat(s2[1]);
 
-			return avg2 - avg1;
+			return (int) (avg2 - avg1);
 		}
 
-		public void reduce(Text key, Iterable<MapWritable> values, Context context) throws IOException, InterruptedException {
+		public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
 			String results = StreamSupport.stream(values.spliterator(), false).
-												map(m -> m.split("_")).
+												map(m -> m.toString().split("_")).
 												sorted(SortReducer::comparator).
 												limit(3).
 												map(m -> mapToString(m)).
@@ -120,7 +120,7 @@ public class JobTwo {
 		job2.setMapperClass(DecupleMapper.class);
 		job2.setReducerClass(SortReducer.class);
 		job2.setMapOutputKeyClass(Text.class);
-		job2.setMapOutputValueClass(MapWritable.class);
+		job2.setMapOutputValueClass(Text.class);
 		job2.setOutputKeyClass(Text.class);
 		job2.setOutputValueClass(Text.class);
 
