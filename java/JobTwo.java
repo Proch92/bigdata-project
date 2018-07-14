@@ -1,5 +1,4 @@
 import java.io.IOException;
-import java.lang.Float;
 import java.util.StringTokenizer;
 import java.util.Calendar;
 import java.util.Arrays;
@@ -91,7 +90,11 @@ public class JobTwo {
 		public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
 			String results = StreamSupport.stream(values.spliterator(), false).
 												map(m -> m.toString().split("_")).
-												sorted((o1, o2) -> Float(o2[1]).compareTo(Float(o1[1]))).
+												sorted((o1, o2) -> {
+													Float f1 = new Float(o1[1]);
+													Float f2 = new Float(o2[1]);
+													return f2.compareTo(f1);
+												}).
 												limit(3).
 												map(m -> mapToString(m)).
 												collect(Collectors.joining(" "));
