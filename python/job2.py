@@ -21,6 +21,13 @@ if __name__ == '__main__':
 
 	window = Window.partitionBy("year").orderBy(desc("sum(occ)"))
 
+	# select su anno, quartiere e occorrenze
+	# aggregazione primaria sull'anno e secondaria sul quartiere
+	# utilizzo la window per rankare i quartieri in base alle occorrenze
+	# filtro solo i quartieri con rank 1,2,3 (3 per ogni anno)
+	# select per scartare la colonna rank
+	# divisione column-wise per calcolare la media annua
+
 	temp1 = df.select(["year", "neigh", "occ"]) \
 				.groupby("year", "neigh") \
 				.sum("occ") \

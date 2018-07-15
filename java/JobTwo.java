@@ -41,14 +41,14 @@ public class JobTwo {
 
 			occurrencies.set(Integer.parseInt(record[4]));
 
-			String comp = record[1] + "_" + record[5];
+			String comp = record[1] + "_" + record[5];			// creo una chiave composita concatenando quartiere e anno
 			compositeKey.set(comp);
 
 			context.write(compositeKey, occurrencies);
 		}
 	}
 
-	// riduzione sulla somma e divisione per 365 per calcolare la media annua
+	// riduzione su chiave composita. ottengo la media dei crimini commessi nel qurtiere per ogni anno
 	public static class AvgReducer extends Reducer<Text, IntWritable, Text, FloatWritable> {
 		public void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
 			float sum = 0;
@@ -61,7 +61,7 @@ public class JobTwo {
 		}
 	}
 
-	// decompone la chiave composita e crea una Map per passare quartiere e avg(occorrenze) al reducer
+	// decompone la chiave composita e passa al reducer le coppie anno:quartiere_average
 	public static class DecupleMapper extends Mapper<Object, Text, Text, Text> {
 
 		public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
@@ -74,7 +74,7 @@ public class JobTwo {
 		}
 	}
 
-	// usa l'iterable delle map per aprire uno stream e calcolare i primi 3 quartieri per ogni anno
+	// usa l'iterable per aprire uno stream e calcolare i primi 3 quartieri per ogni anno
 	public static class SortReducer extends Reducer<Text, Text, Text, Text> {
 		private String mapToString (String[] m) {
 			return new String("(" + m[0] + ", " + m[1] + ")");
@@ -82,8 +82,8 @@ public class JobTwo {
 
 		public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
 			String results = StreamSupport.stream(values.spliterator(), false).
-												map(m -> m.toString().split("_")).
-												sorted((o1, o2) -> {
+												map(m -> m.toString().split("_")).			// splitto la value composita
+												sorted((o1, o2) -> {						// ordino le coppie quartiere:occorrenze per le occorrenze in ordine decrescente
 													Float f1 = new Float(o1[1]);
 													Float f2 = new Float(o2[1]);
 													return f2.compareTo(f1);
@@ -107,7 +107,7 @@ public class JobTwo {
 		job1.setOutputValueClass(FloatWritable.class);
 
 		FileInputFormat.addInputPath(job1, new Path(args[0]));
-		FileOutputFormat.setOutputPath(job1, new Path("temp2"));
+		FileOutputFormat.setOutputPath(job1, new Path("/user/proch92/temp2"));
 
 		job1.waitForCompletion(true);
 
@@ -121,7 +121,7 @@ public class JobTwo {
 		job2.setOutputKeyClass(Text.class);
 		job2.setOutputValueClass(Text.class);
 
-		FileInputFormat.addInputPath(job2, new Path("temp2"));
+		FileInputFormat.addInputPath(job2, new Path("/user/proch92/temp2"));
 		FileOutputFormat.setOutputPath(job2, new Path(args[1]));
 
 		System.exit(job2.waitForCompletion(true) ? 0 : 1);

@@ -37,7 +37,7 @@ public class JobOne {
 			Configuration conf = context.getConfiguration();
 			String crime = conf.get("crime");
 
-			if (year >= 2013 && crime.equals(record[2])) {
+			if (year >= 2013 && crime.equals(record[2])) {			// filtro su anno e crimine
 				occurrencies.set(Integer.parseInt(record[4]));
 			} else {
 				occurrencies.set(0);
@@ -57,7 +57,7 @@ public class JobOne {
 			for (IntWritable val : values) {
 				sum += val.get();
 			}
-			System.out.println(key + " " + sum);
+			
 			result.set(sum);
 			context.write(key, result);
 		}
@@ -76,7 +76,6 @@ public class JobOne {
 
 	// comparatore custom per ordinare in modo decrescente
 	public static class DescendingIntComparator extends WritableComparator {
-
 		public DescendingIntComparator() {
 			super(IntWritable.class, true);
 		}
@@ -90,7 +89,6 @@ public class JobOne {
 		}
 	}
 
-	//params: inputfile, outputfile, crime
 	public static void main(String[] args) throws Exception {
 		Configuration conf = new Configuration();
 		conf.set("crime", "Robbery");
@@ -98,7 +96,7 @@ public class JobOne {
 		Job job1 = Job.getInstance(conf, "first pass");
 		job1.setJarByClass(JobOne.class);
 		job1.setMapperClass(FilterMapper.class);
-		job1.setCombinerClass(IntSumReducer.class);		// posso usare il mio reducer come combiner per ottimizzare l'I/O
+		job1.setCombinerClass(IntSumReducer.class);						// posso usare il mio reducer come combiner per ottimizzare l'I/O
 		job1.setReducerClass(IntSumReducer.class);
 		job1.setOutputKeyClass(Text.class);
 		job1.setOutputValueClass(IntWritable.class);

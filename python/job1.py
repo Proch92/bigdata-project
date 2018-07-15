@@ -19,6 +19,11 @@ if __name__ == '__main__':
 
 	df = spark.read.csv("/user/proch92/data/london.csv", header=False, schema=schema).cache()
 
+	# filtro su anno e crimine
+	# select sulle 3 colonne quartiere, crimine e occorrenze
+	# groupby e aggregazione sulla somma
+	# ordinamento decrescente sulle occorrenze
+
 	results = df.filter(df.year >= 2013) \
 				.filter(df.crime == "Robbery") \
 				.select(["neigh", "crime", "occ"]) \
